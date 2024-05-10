@@ -50,7 +50,6 @@ public class BuildTable {
             while (rs.next()) {
                 String tableName = rs.getString("name");
                 String comment = rs.getString("comment");
-                // System.out.println(tableName + " : " + comment);
                 TableInfo tableInfo = new TableInfo();
                 tableInfo.setTableName(tableName);
                 String beanName = tableName;
@@ -64,7 +63,6 @@ public class BuildTable {
                 List<FieldInfo> fieldInfos = processFieldInfo(tableInfo);
                 tableInfo.setColumnInfo(fieldInfos);
                 getKeyIndexInfos(tableInfo);
-                // System.out.println("tableInfo : " + JsonUtils.toJson(tableInfo));
                 tableInfos.add(tableInfo);
             }
         } catch (Exception e) {

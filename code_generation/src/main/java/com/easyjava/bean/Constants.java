@@ -1,23 +1,26 @@
 package com.easyjava.bean;
 
-
 import com.easyjava.utils.PropertiesUtils;
 
 public class Constants {
     public static Boolean IGNORE_TABLE_PREFIX;
     public static String SUFFIX_BEAN_PARAM;
 
+    // path.base=src/main/java
     public static String PATH_BASE;
 
     // path.base.resources
     public static String PATH_BASE_RESOURCES;
 
+    // package.base=com.easyjava
     public static String PACKAGE_BASE;
     public static String PATH__PAKAGE;
-    
+
+    // package.param=entity.param
     public static String PACKAGE_PARAM;
     public static String PATH_PARAM;
 
+    // package.po=entity.po
     public static String PACKAGE_PO;
     public static String PATH_PO;
 
@@ -25,7 +28,7 @@ public class Constants {
     public static String PACKAGE_VO;
     public static String PATH_VO;
     
-    
+    // package.utils=utils
     public static String PACKAGE_UTILS;
     public static String PATH_UTILS;
 
@@ -209,16 +212,13 @@ public class Constants {
     public static String get_xml_path() {
         return PATH_BASE_RESOURCES + '/' + PATH__PAKAGE +'/' + PACKAGE_MAPPERS;
     }
+
+    // 数据库类型
     public static String[] SQL_DATA_TIME_TYPES = {"datetime", "timestamp", "time"};
-
     public static String[] SQL_DATA_TYPES = {"date"};
-
     public static String[] SQL_DECIMAL_TYPES = {"decimal","double","float"};
-
     public static String[] SQL_STRING_TYPES = {"char", "varchar", "text", "longtext", "mediumtext", "tinytext"};
-
     public static String[] SQL_INTERGER_TYPES = {"int", "tinyint"};
-
     public static String[] SQL_LONG_TYPES = {"bigint"};
 
 }

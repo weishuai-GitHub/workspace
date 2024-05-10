@@ -16,7 +16,7 @@ import com.easyjava.bean.FieldInfo;
 import com.easyjava.bean.TableInfo;
 
 public class BuildController {
-private static final Logger logger = LoggerFactory.getLogger(BuildController.class);
+    private static final Logger logger = LoggerFactory.getLogger(BuildController.class);
 
     public static void execute(TableInfo tableInfo) {
         File folder = new File(Constants.get_controller_path());
@@ -45,49 +45,51 @@ private static final Logger logger = LoggerFactory.getLogger(BuildController.cla
             bw.write("import " + Constants.get_package_param() + "." + tableInfo.getBeanParaName() + ";\n");
             bw.write("import " + Constants.get_package_vo() + ".ResponseVO;\n");
             bw.write("import " + Constants.get_package_service() + "." + tableInfo.getBeanName() + "Service;\n\n");
-            
+
             bw.write("import org.springframework.web.bind.annotation.RequestBody;\n");
             bw.write("import org.springframework.web.bind.annotation.RequestMapping;\n");
             bw.write("import org.springframework.web.bind.annotation.RequestParam;\n");
             bw.write("import org.springframework.web.bind.annotation.RestController;\n");
             bw.write("import javax.annotation.Resource;\n\n");
             BuildComment.createComment(bw, tableInfo.getTableComment() + "Controller");
-            // bw.write("@RestController(\""+ className.substring(0,1).toLowerCase() +className.substring(1) +"\")\n");
+            // bw.write("@RestController(\""+ className.substring(0,1).toLowerCase()
+            // +className.substring(1) +"\")\n");
             bw.write("@RestController\n");
-            bw.write("@RequestMapping(\"/"+ tableInfo.getBeanName().substring(0,1).toLowerCase() +tableInfo.getBeanName().substring(1) +"\")\n");
+            bw.write("@RequestMapping(\"/" + tableInfo.getBeanName().substring(0, 1).toLowerCase()
+                    + tableInfo.getBeanName().substring(1) + "\")\n");
             bw.write("public class " + className + " extends ABaseController {\n\n");
 
             bw.write("\t@Resource\n");
             String serviceName = tableInfo.getBeanName() + "Service";
-            String serviceImplName = serviceName.substring(0,1).toLowerCase() +serviceName.substring(1);
-            bw.write("\tprivate "+ serviceName +" "+ serviceImplName+";\n\n");
+            String serviceImplName = serviceName.substring(0, 1).toLowerCase() + serviceName.substring(1);
+            bw.write("\tprivate " + serviceName + " " + serviceImplName + ";\n\n");
             BuildComment.createFieldComment(bw, "通用查询");
             bw.write("\t@SuppressWarnings(\"rawtypes\")\n");
             bw.write("\t@RequestMapping(\"loadDataList\")\n");
-            bw.write("\tpublic ResponseVO loadDataList("+tableInfo.getBeanParaName()+" query){\n");
-            bw.write("\t\treturn getSuccessResponseVO( this."+serviceImplName+".findCountByPage(query));\n");
+            bw.write("\tpublic ResponseVO loadDataList(" + tableInfo.getBeanParaName() + " query){\n");
+            bw.write("\t\treturn getSuccessResponseVO( this." + serviceImplName + ".findCountByPage(query));\n");
             bw.write("\t}\n\n");
 
-            
             BuildComment.createFieldComment(bw, "新增");
             bw.write("\t@SuppressWarnings(\"rawtypes\")\n");
             bw.write("\t@RequestMapping(\"add\")\n");
             bw.write("    public ResponseVO add(" + tableInfo.getBeanName() + " bean){\n");
-            bw.write("        return getSuccessResponseVO( this."+serviceImplName+".add(bean));\n");
+            bw.write("        return getSuccessResponseVO( this." + serviceImplName + ".add(bean));\n");
             bw.write("    }\n\n");
 
             BuildComment.createFieldComment(bw, "批量新增");
             bw.write("\t@SuppressWarnings(\"rawtypes\")\n");
             bw.write("\t@RequestMapping(\"addBatch\")\n");
             bw.write("    public ResponseVO addBatch(@RequestBody List<" + tableInfo.getBeanName() + "> beans){\n");
-            bw.write("\t\treturn getSuccessResponseVO( this."+serviceImplName+".addBatch(beans));\n");
+            bw.write("\t\treturn getSuccessResponseVO( this." + serviceImplName + ".addBatch(beans));\n");
             bw.write("    }\n\n");
 
             BuildComment.createFieldComment(bw, "批量新增或更新");
             bw.write("\t@SuppressWarnings(\"rawtypes\")\n");
             bw.write("\t@RequestMapping(\"addOrUpdateBatch\")\n");
-            bw.write("    public ResponseVO addOrUpdateBatch(@RequestBody List<" + tableInfo.getBeanName() + "> beans){\n");
-            bw.write("\t\treturn getSuccessResponseVO( this."+serviceImplName+".addOrUpdateBatch(beans));\n");
+            bw.write("    public ResponseVO addOrUpdateBatch(@RequestBody List<" + tableInfo.getBeanName()
+                    + "> beans){\n");
+            bw.write("\t\treturn getSuccessResponseVO( this." + serviceImplName + ".addOrUpdateBatch(beans));\n");
             bw.write("    }\n\n");
             Map<String, List<FieldInfo>> keyIndexMap = tableInfo.getKeyIndexMap();
             for (Map.Entry<String, List<FieldInfo>> entry : keyIndexMap.entrySet()) {
@@ -97,7 +99,8 @@ private static final Logger logger = LoggerFactory.getLogger(BuildController.cla
                 StringBuffer param = new StringBuffer();
                 String tmp;
                 for (FieldInfo key : keyList) {
-                    methodParam.append("@RequestParam(\""+key.getPropertyName()+"\") "+key.getJavaType()).append(" ").append(key.getPropertyName()).append(",");
+                    methodParam.append("@RequestParam(\"" + key.getPropertyName() + "\") " + key.getJavaType())
+                            .append(" ").append(key.getPropertyName()).append(",");
                     tmp = key.getPropertyName().substring(0, 1).toUpperCase() + key.getPropertyName().substring(1);
                     sb.append(tmp).append("And");
                     param.append(key.getPropertyName()).append(",");
@@ -108,30 +111,35 @@ private static final Logger logger = LoggerFactory.getLogger(BuildController.cla
                 }
                 BuildComment.createFieldComment(bw,
                         "根据" + sb.substring(0, sb.length() - 3) + "查询" + tableInfo.getTableComment());
-                bw.write("\t@SuppressWarnings(\"rawtypes\")\n");                
-                bw.write("\t@RequestMapping(\""+ "getBy" + sb.substring(0, sb.length() - 3)+"\")\n");
+                bw.write("\t@SuppressWarnings(\"rawtypes\")\n");
+                bw.write("\t@RequestMapping(\"" + "getBy" + sb.substring(0, sb.length() - 3) + "\")\n");
                 bw.write("    public ResponseVO getBy" + sb.substring(0, sb.length() - 3) + "("
-                + methodParam + " ){\n");
-                bw.write("        return getSuccessResponseVO(this."+serviceImplName+".getBy" + sb.substring(0, sb.length() - 3) + "(" + param + "));\n");
+                        + methodParam + " ){\n");
+                bw.write("        return getSuccessResponseVO(this." + serviceImplName + ".getBy"
+                        + sb.substring(0, sb.length() - 3) + "(" + param + "));\n");
                 bw.write("    }\n");
                 bw.write("\n");
 
                 BuildComment.createFieldComment(bw,
-                "根据" + sb.substring(0, sb.length() - 3) + "更新" + tableInfo.getTableComment());
+                        "根据" + sb.substring(0, sb.length() - 3) + "更新" + tableInfo.getTableComment());
                 bw.write("\t@SuppressWarnings(\"rawtypes\")\n");
-                bw.write("\t@RequestMapping(\""+ "updateBy" + sb.substring(0, sb.length() - 3)+"\")\n");
-                bw.write("    public ResponseVO updateBy" + sb.substring(0, sb.length() - 3) + "( @RequestBody " + tableInfo.getBeanName() + " t,"
-                + methodParam + " ){\n");
-                bw.write("        return getSuccessResponseVO( this."+serviceImplName+".updateBy" + sb.substring(0, sb.length() - 3) + "(t," + param + "));\n");
+                bw.write("\t@RequestMapping(\"" + "updateBy" + sb.substring(0, sb.length() - 3) + "\")\n");
+                bw.write("    public ResponseVO updateBy" + sb.substring(0, sb.length() - 3) + "( @RequestBody "
+                        + tableInfo.getBeanName() + " t,"
+                        + methodParam + " ){\n");
+                bw.write("        return getSuccessResponseVO( this." + serviceImplName + ".updateBy"
+                        + sb.substring(0, sb.length() - 3) + "(t," + param + "));\n");
                 bw.write("    }\n");
                 bw.write("\n");
 
                 BuildComment.createFieldComment(bw,
-                "根据" + sb.substring(0, sb.length() - 3) + "删除" + tableInfo.getTableComment());
+                        "根据" + sb.substring(0, sb.length() - 3) + "删除" + tableInfo.getTableComment());
                 bw.write("\t@SuppressWarnings(\"rawtypes\")\n");
-                bw.write("\t@RequestMapping(\""+ "deleteBy" + sb.substring(0, sb.length() - 3)+"\")\n");
-                bw.write("    public ResponseVO deleteBy" + sb.substring(0, sb.length() - 3) + "(" + methodParam + " ){\n");
-                bw.write("        return getSuccessResponseVO( this."+serviceImplName+".deleteBy" + sb.substring(0, sb.length() - 3) + "(" + param + "));\n");
+                bw.write("\t@RequestMapping(\"" + "deleteBy" + sb.substring(0, sb.length() - 3) + "\")\n");
+                bw.write("    public ResponseVO deleteBy" + sb.substring(0, sb.length() - 3) + "(" + methodParam
+                        + " ){\n");
+                bw.write("        return getSuccessResponseVO( this." + serviceImplName + ".deleteBy"
+                        + sb.substring(0, sb.length() - 3) + "(" + param + "));\n");
                 bw.write("    }\n");
                 bw.write("\n");
             }
@@ -154,6 +162,5 @@ private static final Logger logger = LoggerFactory.getLogger(BuildController.cla
                 logger.error("close stream failed", e2);
             }
         }
-
     }
 }

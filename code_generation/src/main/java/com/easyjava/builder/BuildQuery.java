@@ -19,14 +19,16 @@ import com.easyjava.bean.TableInfo;
 
 public class BuildQuery {
     private static final Logger logger = LoggerFactory.getLogger(BuildPo.class);
-    public static void execute(TableInfo  tableInfo) {
+
+    public static void execute(TableInfo tableInfo) {
         File folder = new File(Constants.get_param_path());
         if (!folder.exists()) {
             folder.mkdirs();
         }
-        File file = new File(Constants.get_param_path() + "/" + tableInfo.getBeanName() + Constants.SUFFIX_BEAN_PARAM + ".java");
+        File file = new File(
+                Constants.get_param_path() + "/" + tableInfo.getBeanName() + Constants.SUFFIX_BEAN_PARAM + ".java");
         try {
-            if(!file.exists())
+            if (!file.exists())
                 file.createNewFile();
         } catch (Exception e) {
             logger.error("create file failed", e);
@@ -35,25 +37,27 @@ public class BuildQuery {
         OutputStreamWriter ouw = null;
         BufferedWriter bw = null;
         try {
-            out = new  FileOutputStream(file);
+            out = new FileOutputStream(file);
             ouw = new OutputStreamWriter(out, "UTF-8");
             bw = new BufferedWriter(ouw);
             bw.write("package " + Constants.get_package_param() + ";\n\n");
 
-            if(tableInfo.isHasBigDecimal())
-                bw.write("import java.math.BigDecimal;\n"); 
-            
+            if (tableInfo.isHasBigDecimal())
+                bw.write("import java.math.BigDecimal;\n");
+
             bw.write("\n\n");
-            BuildComment.createComment(bw,tableInfo.getTableComment());
-            bw.write("public class " + tableInfo.getBeanName() + Constants.SUFFIX_BEAN_PARAM + " extends BaseQuery {\n");
+            BuildComment.createComment(bw, tableInfo.getTableComment());
+            bw.write(
+                    "public class " + tableInfo.getBeanName() + Constants.SUFFIX_BEAN_PARAM + " extends BaseQuery {\n");
             List<FieldInfo> extendInfo = new ArrayList<>();
             for (FieldInfo filedInfo : tableInfo.getColumnInfo()) {
-                BuildComment.createFieldComment(bw,filedInfo.getComment());
-                
-                //如果是Sting类型，添加模糊查询字段
-                if(ArrayUtils.contains(Constants.SQL_STRING_TYPES, filedInfo.getSqlType())) {
+                BuildComment.createFieldComment(bw, filedInfo.getComment());
+
+                // 如果是Sting类型，添加模糊查询字段
+                if (ArrayUtils.contains(Constants.SQL_STRING_TYPES, filedInfo.getSqlType())) {
                     bw.write("    private " + filedInfo.getJavaType() + " " + filedInfo.getPropertyName() + ";\n\n");
-                    bw.write("    private String " + filedInfo.getPropertyName() + Constants.SUFFIX_BEAN_PARAM_FUZZY + ";\n\n");
+                    bw.write("    private String " + filedInfo.getPropertyName() + Constants.SUFFIX_BEAN_PARAM_FUZZY
+                            + ";\n\n");
                     FieldInfo filedInfoFuzzy = new FieldInfo();
                     filedInfoFuzzy.setJavaType(filedInfo.getJavaType());
                     filedInfoFuzzy.setPropertyName(filedInfo.getPropertyName() + Constants.SUFFIX_BEAN_PARAM_FUZZY);
@@ -62,12 +66,14 @@ public class BuildQuery {
                     extendInfo.add(filedInfoFuzzy);
                 }
 
-                //如果是时间类型，添加时间范围查询字段
-                else if(ArrayUtils.contains(Constants.SQL_DATA_TIME_TYPES, filedInfo.getSqlType())||
-                    ArrayUtils.contains(Constants.SQL_DATA_TYPES, filedInfo.getSqlType())) {
+                // 如果是时间类型，添加时间范围查询字段
+                else if (ArrayUtils.contains(Constants.SQL_DATA_TIME_TYPES, filedInfo.getSqlType()) ||
+                        ArrayUtils.contains(Constants.SQL_DATA_TYPES, filedInfo.getSqlType())) {
                     bw.write("    private String " + filedInfo.getPropertyName() + ";\n\n");
-                    bw.write("    private String " + filedInfo.getPropertyName() + Constants.SUFFIX_BEAN_PARAM_TIME_START + ";\n\n");
-                    bw.write("    private String " + filedInfo.getPropertyName() + Constants.SUFFIX_BEAN_PARAM_TIME_END + ";\n\n");
+                    bw.write("    private String " + filedInfo.getPropertyName()
+                            + Constants.SUFFIX_BEAN_PARAM_TIME_START + ";\n\n");
+                    bw.write("    private String " + filedInfo.getPropertyName() + Constants.SUFFIX_BEAN_PARAM_TIME_END
+                            + ";\n\n");
                     FieldInfo start = new FieldInfo();
                     start.setJavaType(filedInfo.getJavaType());
                     start.setPropertyName(filedInfo.getPropertyName() + Constants.SUFFIX_BEAN_PARAM_TIME_START);
@@ -80,53 +86,51 @@ public class BuildQuery {
                     end.setSqlType(filedInfo.getSqlType());
                     end.setFieldName(filedInfo.getFieldName());
                     extendInfo.add(end);
-                }
-                else {
+                } else {
                     bw.write("    private " + filedInfo.getJavaType() + " " + filedInfo.getPropertyName() + ";\n\n");
                 }
             }
-            
-            //生成get和set方法
-            for(FieldInfo filedInfo : tableInfo.getColumnInfo()) {
-                if(ArrayUtils.contains(Constants.SQL_DATA_TIME_TYPES, filedInfo.getSqlType())||
-                    ArrayUtils.contains(Constants.SQL_DATA_TYPES, filedInfo.getSqlType()))
-                {
-                    BuildSetandGet.createSet(bw,"String",filedInfo.getPropertyName());
+
+            // 生成get和set方法
+            for (FieldInfo filedInfo : tableInfo.getColumnInfo()) {
+                if (ArrayUtils.contains(Constants.SQL_DATA_TIME_TYPES, filedInfo.getSqlType()) ||
+                        ArrayUtils.contains(Constants.SQL_DATA_TYPES, filedInfo.getSqlType())) {
+                    BuildSetandGet.createSet(bw, "String", filedInfo.getPropertyName());
                     bw.write("\n");
-                    BuildSetandGet.createGet(bw,"String",filedInfo.getPropertyName());
+                    BuildSetandGet.createGet(bw, "String", filedInfo.getPropertyName());
                     bw.write("\n");
-                }
-                else{
-                    BuildSetandGet.createSet(bw,filedInfo.getJavaType(),filedInfo.getPropertyName());
+                } else {
+                    BuildSetandGet.createSet(bw, filedInfo.getJavaType(), filedInfo.getPropertyName());
                     bw.write("\n");
-                    BuildSetandGet.createGet(bw,filedInfo.getJavaType(),filedInfo.getPropertyName());
-                    bw.write("\n");
-                }
-                
-            }
-            for(FieldInfo filedInfo : extendInfo) {
-                if(ArrayUtils.contains(Constants.SQL_DATA_TIME_TYPES, filedInfo.getSqlType())||
-                    ArrayUtils.contains(Constants.SQL_DATA_TYPES, filedInfo.getSqlType()))
-                {
-                    BuildSetandGet.createSet(bw,"String",filedInfo.getPropertyName());
-                    bw.write("\n");
-                    BuildSetandGet.createGet(bw,"String",filedInfo.getPropertyName());
-                    bw.write("\n");
-                }
-                else{
-                    BuildSetandGet.createSet(bw,filedInfo.getJavaType(),filedInfo.getPropertyName());
-                    bw.write("\n");
-                    BuildSetandGet.createGet(bw,filedInfo.getJavaType(),filedInfo.getPropertyName());
+                    BuildSetandGet.createGet(bw, filedInfo.getJavaType(), filedInfo.getPropertyName());
                     bw.write("\n");
                 }
             }
+
+            // 生成扩展字段的get和set方法
+            for (FieldInfo filedInfo : extendInfo) {
+                if (ArrayUtils.contains(Constants.SQL_DATA_TIME_TYPES, filedInfo.getSqlType()) ||
+                        ArrayUtils.contains(Constants.SQL_DATA_TYPES, filedInfo.getSqlType())) {
+                    BuildSetandGet.createSet(bw, "String", filedInfo.getPropertyName());
+                    bw.write("\n");
+                    BuildSetandGet.createGet(bw, "String", filedInfo.getPropertyName());
+                    bw.write("\n");
+                } else {
+                    BuildSetandGet.createSet(bw, filedInfo.getJavaType(), filedInfo.getPropertyName());
+                    bw.write("\n");
+                    BuildSetandGet.createGet(bw, filedInfo.getJavaType(), filedInfo.getPropertyName());
+                    bw.write("\n");
+                }
+            }
+
+            // 在生成xml文件时，需要用到扩展字段
             tableInfo.setExtendInfo(extendInfo);
 
             bw.write("}\n");
             bw.flush();
         } catch (Exception e) {
             logger.error("write file failed", e);
-        }finally{
+        } finally {
             try {
                 if (bw != null) {
                     bw.close();

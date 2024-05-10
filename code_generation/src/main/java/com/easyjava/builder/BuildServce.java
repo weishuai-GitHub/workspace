@@ -45,7 +45,7 @@ public class BuildServce {
             bw.write("import " + Constants.get_package_param() + "." + tableInfo.getBeanParaName() + ";\n");
             bw.write("import " + Constants.get_package_vo() + ".PaginationResultVO;\n\n");
 
-            BuildComment.createComment(bw, tableInfo.getTableComment() +"Service");
+            BuildComment.createComment(bw, tableInfo.getTableComment() + "Service");
             bw.write("public interface " + className + " {\n\n");
             BuildComment.createFieldComment(bw, "根据条件查询列表");
             bw.write("    List<" + tableInfo.getBeanName() + "> findListByParam(" + tableInfo.getBeanParaName()
@@ -82,7 +82,8 @@ public class BuildServce {
                 bw.write("\n");
                 BuildComment.createFieldComment(bw,
                         "根据" + sb.substring(0, sb.length() - 3) + "更新" + tableInfo.getTableComment());
-                bw.write("    Integer updateBy" + sb.substring(0, sb.length() - 3) + "( " + tableInfo.getBeanName() + " t,"
+                bw.write("    Integer updateBy" + sb.substring(0, sb.length() - 3) + "( " + tableInfo.getBeanName()
+                        + " t,"
                         + methodParam + " );\n");
                 bw.write("\n");
                 BuildComment.createFieldComment(bw,
@@ -109,6 +110,5 @@ public class BuildServce {
                 logger.error("close stream failed", e2);
             }
         }
-
     }
 }

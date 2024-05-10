@@ -4,13 +4,11 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-
 public class TableInfo {
     // 表名
     private String tableName;
 
-
-    //bean名称
+    // bean名称
     private String beanName;
     private String beanParaName;
 
@@ -20,23 +18,20 @@ public class TableInfo {
     // 表字段信息
     private List<FieldInfo> columnInfo;
 
-    //扩张字段信息
-    private List<FieldInfo> extendInfo;    
+    // 扩张字段信息
+    private List<FieldInfo> extendInfo;
 
-    //唯一索引集合
-    private Map<String, List<FieldInfo>> keyIndexMap=new LinkedHashMap<>();
+    // 唯一索引集合
+    private Map<String, List<FieldInfo>> keyIndexMap = new LinkedHashMap<>();
 
-    //是否有data类型
-    private boolean hasDate=false;
+    // 是否有data类型
+    private boolean hasDate = false;
 
-    //是否有datatime类型
-    private boolean hasDateTime=false;
+    // 是否有datatime类型
+    private boolean hasDateTime = false;
 
-    //是否有bigdecimal类型
-    private boolean hasBigDecimal=false;
-
-    // //是否有自增长类型
-    // private boolean hasAutoIncrement=false;
+    // 是否有bigdecimal类型
+    private boolean hasBigDecimal = false;
 
     public void setTableName(String tableName) {
         this.tableName = tableName;
@@ -119,11 +114,11 @@ public class TableInfo {
     }
 
     // public boolean isHasAutoIncrement() {
-    //     return hasAutoIncrement;
+    // return hasAutoIncrement;
     // }
 
     // public void setHasAutoIncrement(boolean hasAutoIncrement) {
-    //     this.hasAutoIncrement = hasAutoIncrement;
+    // this.hasAutoIncrement = hasAutoIncrement;
     // }
-    
+
 }

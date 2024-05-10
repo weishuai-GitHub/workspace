@@ -6,17 +6,18 @@ public class FieldInfo {
 
     // bean属性名
     private String propertyName;
+
+    // sql字段类型
     private String sqlType;
 
-    // 字段类型
+    // 对应的java字段类型
     private String javaType;
 
     // 字段注释
     private String comment;
 
-    //field 是否自增
+    // field 是否自增
     private boolean isAutoIncrement;
-
 
     public String getFieldName() {
         return FieldName;
@@ -65,7 +66,5 @@ public class FieldInfo {
     public void setAutoIncrement(boolean isAutoIncrement) {
         this.isAutoIncrement = isAutoIncrement;
     }
-
-    
 
 }
