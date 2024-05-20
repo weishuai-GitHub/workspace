@@ -26,6 +26,11 @@ public interface BaseMapper<T,P> {
     Integer insertOrUpdateBatch(@Param("list") List<T> list);
 
     /**
+     * update:根据参数更新数据. <br/>
+     */
+    Integer updateByParam(@Param("bean") T t, @Param("query") P p);
+
+    /**
      * selectList:根据参数查询集合. <br/>
      */
 

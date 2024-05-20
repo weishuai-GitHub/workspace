@@ -95,6 +95,10 @@ public class BuildMapXml {
             buildBatchInsertOrUpdate(bw, tableInfo);
             bw.write("\n");
 
+            //根据参数更新
+            buildUpdateByParam(bw, tableInfo);
+            bw.write("\n");
+
             // 根据主键查询
             buildSelectBykey(bw, tableInfo);
 
@@ -422,10 +426,10 @@ public class BuildMapXml {
             valueList.append("#{item." + filedInfo.getPropertyName() + "},");
         }
         bw.write("\t\tinsert into " + tableInfo.getTableName() + " ( "
-                + columnList.substring(0, columnList.length() - 1) + " )\n");
-        bw.write("\t\t<foreach collection=\"list\" item=\"item\" separator=\",\" open=\"(\" close=\")\">\n");
+                + columnList.substring(0, columnList.length() - 1) + " ) VALUES\n");
+        bw.write("\t\t<foreach collection=\"list\" item=\"item\" separator=\",\">\n");
         bw.write("\t\t\t");
-        bw.write(valueList.substring(0, valueList.length() - 1));
+        bw.write("("+valueList.substring(0, valueList.length() - 1)+")");
         bw.write(" \n");
         bw.write("\t\t</foreach>\n");
         bw.write("\t\tON DUPLICATE KEY UPDATE ");
@@ -450,6 +454,27 @@ public class BuildMapXml {
         bw.write("\t</insert>\n");
     }
 
+    private static void buildUpdateByParam(BufferedWriter bw, TableInfo tableInfo) throws Exception{
+        bw.write("\t<!--根据参数更新-->\n");
+        bw.write("\t<update id=\"updateByParam\" parameterType=\"" + poClass + "\">\n");
+        bw.write("\t\tupdate " + tableInfo.getTableName() + "\n");
+        bw.write("\t\t<set>\n");
+        for (FieldInfo filedInfo : tableInfo.getColumnInfo()) {
+            if (ArrayUtils.contains(Constants.SQL_STRING_TYPES, filedInfo.getSqlType())) {
+                bw.write("\t\t\t<if test=\"bean." + filedInfo.getPropertyName() + " != null and bean."
+                        + filedInfo.getPropertyName() + " != ''\">\n");
+                bw.write("\t\t\t\t" + filedInfo.getFieldName() + "=#{bean." + filedInfo.getPropertyName() + "},\n");
+                bw.write("\t\t\t</if>\n");
+            } else {
+                bw.write("\t\t\t<if test=\"bean." + filedInfo.getPropertyName() + " != null\">\n");
+                bw.write("\t\t\t\t" + filedInfo.getFieldName() + "=#{bean." + filedInfo.getPropertyName() + "},\n");
+                bw.write("\t\t\t</if>\n");
+            }
+        }
+        bw.write("\t\t</set>\n");
+        bw.write("\t\t<include refid=\"query_condition\"/>\n");
+        bw.write("\t</update>\n");
+    }
     public static void buildSelectBykey(BufferedWriter bw, TableInfo tableInfo) throws Exception {
         Map<String, List<FieldInfo>> keyIndexMap = tableInfo.getKeyIndexMap();
         for (Map.Entry<String, List<FieldInfo>> entry : keyIndexMap.entrySet()) {
