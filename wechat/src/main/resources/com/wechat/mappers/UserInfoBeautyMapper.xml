@@ -1,0 +1,260 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wechat.mappers.UserInfoBeautyMapper">
+	<!--实体映射-->
+	<resultMap id="base_result_map" type="com.wechat.entity.po.UserInfoBeauty">
+		<!--id-->
+		<id column="id" property="id"/>
+		<!--邮箱-->
+		<result column="email" property="email"/>
+		<!--用户ID-->
+		<result column="use_id" property="useId"/>
+		<!--状态 0: 未使用 1：已使用-->
+		<result column="staus" property="staus"/>
+	</resultMap>
+
+	<!--查询列表-->
+	<sql id="base_column_list">
+		id,email,use_id,staus
+	</sql>
+
+	<!--查询条件-->
+	<sql id="base_query_condition">
+		<if test="query.id != null">
+			and id= #{query.id}
+		</if>
+		<if test="query.email != null and query.email != ''">
+			and email= #{query.email}
+		</if>
+		<if test="query.useId != null and query.useId != ''">
+			and use_id= #{query.useId}
+		</if>
+		<if test="query.staus != null">
+			and staus= #{query.staus}
+		</if>
+	</sql>
+
+	<!--扩展查询条件-->
+	<sql id="base_query_condition_extend">
+		<if test="query.emailFuzzy != null and query.emailFuzzy != ''">
+			and email like concat('%', #{query.emailFuzzy},'%')
+		</if>
+		<if test="query.useIdFuzzy != null and query.useIdFuzzy != ''">
+			and use_id like concat('%', #{query.useIdFuzzy},'%')
+		</if>
+	</sql>
+
+	<!--通用查询条件-->
+	<sql id="query_condition">
+		<where>
+			<include refid="base_query_condition"/>
+			<include refid="base_query_condition_extend"/>
+		</where>
+	</sql>
+
+	<!--查询列表-->
+	<select id="selectList" resultMap="base_result_map" >
+		SELECT
+		<include refid="base_column_list"/>
+		FROM tb_user_info_beauty
+		<include refid="query_condition"/>
+		<if test="query.orderBy != null">
+			order by ${query.orderBy}
+		</if>
+		<if test="query.simplePage != null">
+			limit #{query.simplePage.start}, #{query.simplePage.pageSize}
+		</if>
+	</select>
+
+	<!--查询总数-->
+	<select id="selectCount" resultType="Integer">
+		SELECT count(1)
+		FROM tb_user_info_beauty
+		<include refid="query_condition"/>
+	</select>
+
+	<!--插入匹配有值字段-->
+	<insert id="insert" parameterType="com.wechat.entity.po.UserInfoBeauty">
+		<selectKey keyProperty="bean.id" order="AFTER" resultType="Integer">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+		insert into tb_user_info_beauty
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="bean.id != null">
+				id,
+			</if>
+			<if test="bean.email != null and bean.email != ''">
+				email,
+			</if>
+			<if test="bean.useId != null and bean.useId != ''">
+				use_id,
+			</if>
+			<if test="bean.staus != null">
+				staus,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="bean.id != null">
+				#{bean.id},
+			</if>
+			<if test="bean.email != null and bean.email != ''">
+				#{bean.email},
+			</if>
+			<if test="bean.useId != null and bean.useId != ''">
+				#{bean.useId},
+			</if>
+			<if test="bean.staus != null">
+				#{bean.staus},
+			</if>
+		</trim>
+	</insert>
+
+	<!--插入或更新-->
+	<insert id="insertOrUpdate" parameterType="com.wechat.entity.po.UserInfoBeauty">
+		insert into tb_user_info_beauty
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="bean.id != null">
+				id,
+			</if>
+			<if test="bean.email != null and bean.email != ''">
+				email,
+			</if>
+			<if test="bean.useId != null and bean.useId != ''">
+				use_id,
+			</if>
+			<if test="bean.staus != null">
+				staus,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="bean.id != null">
+				#{bean.id},
+			</if>
+			<if test="bean.email != null and bean.email != ''">
+				#{bean.email},
+			</if>
+			<if test="bean.useId != null and bean.useId != ''">
+				#{bean.useId},
+			</if>
+			<if test="bean.staus != null">
+				#{bean.staus},
+			</if>
+		</trim>
+		ON DUPLICATE KEY UPDATE
+		<trim prefix=""  suffix="" suffixOverrides=",">
+			<if test="bean.staus != null">
+				staus=VALUES(staus),
+			</if>
+		</trim>
+	</insert>
+
+	<!--批量插入-->
+	<insert id="insertBatch" parameterType="com.wechat.entity.po.UserInfoBeauty" useGeneratedKeys="true" keyProperty="id">
+		insert into tb_user_info_beauty(email,use_id,staus) VALUES 
+		<foreach collection="list" item="item" separator="," open="(" close=")" >
+			#{item.email},#{item.useId},#{item.staus} 
+		</foreach>
+	</insert>
+
+	<!--批量插入或更新-->
+	<insert id="insertOrUpdateBatch" parameterType="com.wechat.entity.po.UserInfoBeauty" useGeneratedKeys="true" keyProperty="id">
+		insert into tb_user_info_beauty ( email,use_id,staus )
+		<foreach collection="list" item="item" separator="," open="(" close=")">
+			#{item.email},#{item.useId},#{item.staus} 
+		</foreach>
+		ON DUPLICATE KEY UPDATE staus =VALUES( staus ) 
+	</insert>
+
+	<!--根据Id查询-->
+	<select id="selectById" resultMap="base_result_map">
+		select <include refid="base_column_list"/>
+		from tb_user_info_beauty
+		where id=#{id} 
+	</select>
+
+	<!--根据UseId查询-->
+	<select id="selectByUseId" resultMap="base_result_map">
+		select <include refid="base_column_list"/>
+		from tb_user_info_beauty
+		where use_id=#{useId} 
+	</select>
+
+	<!--根据Email查询-->
+	<select id="selectByEmail" resultMap="base_result_map">
+		select <include refid="base_column_list"/>
+		from tb_user_info_beauty
+		where email=#{email} 
+	</select>
+
+	<!--根据Id删除-->
+	<delete id="deleteById">
+		delete from tb_user_info_beauty
+		where id=#{id} 
+	</delete>
+
+	<!--根据UseId删除-->
+	<delete id="deleteByUseId">
+		delete from tb_user_info_beauty
+		where use_id=#{useId} 
+	</delete>
+
+	<!--根据Email删除-->
+	<delete id="deleteByEmail">
+		delete from tb_user_info_beauty
+		where email=#{email} 
+	</delete>
+
+	<!--根据Id更新-->
+	<update id="updateById">
+		update tb_user_info_beauty
+		<set>
+			<if test="bean.email != null and bean.email != ''">
+				email=#{bean.email},
+			</if>
+			<if test="bean.useId != null and bean.useId != ''">
+				use_id=#{bean.useId},
+			</if>
+			<if test="bean.staus != null">
+				staus=#{bean.staus},
+			</if>
+		</set>
+		where id=#{id} 
+	</update>
+
+	<!--根据UseId更新-->
+	<update id="updateByUseId">
+		update tb_user_info_beauty
+		<set>
+			<if test="bean.id != null">
+				id=#{bean.id},
+			</if>
+			<if test="bean.email != null and bean.email != ''">
+				email=#{bean.email},
+			</if>
+			<if test="bean.staus != null">
+				staus=#{bean.staus},
+			</if>
+		</set>
+		where use_id=#{useId} 
+	</update>
+
+	<!--根据Email更新-->
+	<update id="updateByEmail">
+		update tb_user_info_beauty
+		<set>
+			<if test="bean.id != null">
+				id=#{bean.id},
+			</if>
+			<if test="bean.useId != null and bean.useId != ''">
+				use_id=#{bean.useId},
+			</if>
+			<if test="bean.staus != null">
+				staus=#{bean.staus},
+			</if>
+		</set>
+		where email=#{email} 
+	</update>
+
+
+</mapper>

@@ -1,0 +1,27 @@
+{"properties": [
+  {
+    "name": "log.root.level",
+    "type": "java.lang.String",
+    "description": "A description for 'log.root.level'"
+  },
+  {
+    "name": "project.folder",
+    "type": "java.lang.String",
+    "description": "A description for 'project.folder'"
+  },
+  {
+    "name": "admin.email",
+    "type": "java.lang.String",
+    "description": "A description for 'super.admin'"
+  },
+  {
+    "name": "dev",
+    "type": "java.lang.String",
+    "description": "A description for 'dev'"
+  },
+  {
+    "name": "ws.port",
+    "type": "java.lang.String",
+    "description": "A description for 'ws.port'"
+  }
+]}

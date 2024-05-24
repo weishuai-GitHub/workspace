@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wechat.mappers.ChatSessionMapper">
+	<!--实体映射-->
+	<resultMap id="base_result_map" type="com.wechat.entity.po.ChatSession">
+		<!--会话ID-->
+		<id column="session_id" property="sessionId"/>
+		<!--最后接受的消息-->
+		<result column="last_massage" property="lastMassage"/>
+		<!--最后接受消息时间-->
+		<result column="last_receive_time" property="lastReceiveTime"/>
+	</resultMap>
+
+	<!--查询列表-->
+	<sql id="base_column_list">
+		session_id,last_massage,last_receive_time
+	</sql>
+
+	<!--查询条件-->
+	<sql id="base_query_condition">
+		<if test="query.sessionId != null and query.sessionId != ''">
+			and session_id= #{query.sessionId}
+		</if>
+		<if test="query.lastMassage != null and query.lastMassage != ''">
+			and last_massage= #{query.lastMassage}
+		</if>
+		<if test="query.lastReceiveTime != null">
+			and last_receive_time= #{query.lastReceiveTime}
+		</if>
+	</sql>
+
+	<!--扩展查询条件-->
+	<sql id="base_query_condition_extend">
+		<if test="query.sessionIdFuzzy != null and query.sessionIdFuzzy != ''">
+			and session_id like concat('%', #{query.sessionIdFuzzy},'%')
+		</if>
+		<if test="query.lastMassageFuzzy != null and query.lastMassageFuzzy != ''">
+			and last_massage like concat('%', #{query.lastMassageFuzzy},'%')
+		</if>
+	</sql>
+
+	<!--通用查询条件-->
+	<sql id="query_condition">
+		<where>
+			<include refid="base_query_condition"/>
+			<include refid="base_query_condition_extend"/>
+		</where>
+	</sql>
+
+	<!--查询列表-->
+	<select id="selectList" resultMap="base_result_map" >
+		SELECT
+		<include refid="base_column_list"/>
+		FROM tb_chat_session
+		<include refid="query_condition"/>
+		<if test="query.orderBy != null">
+			order by ${query.orderBy}
+		</if>
+		<if test="query.simplePage != null">
+			limit #{query.simplePage.start}, #{query.simplePage.pageSize}
+		</if>
+	</select>
+
+	<!--查询总数-->
+	<select id="selectCount" resultType="Integer">
+		SELECT count(1)
+		FROM tb_chat_session
+		<include refid="query_condition"/>
+	</select>
+
+	<!--插入匹配有值字段-->
+	<insert id="insert" parameterType="com.wechat.entity.po.ChatSession">
+		insert into tb_chat_session
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="bean.sessionId != null and bean.sessionId != ''">
+				session_id,
+			</if>
+			<if test="bean.lastMassage != null and bean.lastMassage != ''">
+				last_massage,
+			</if>
+			<if test="bean.lastReceiveTime != null">
+				last_receive_time,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="bean.sessionId != null and bean.sessionId != ''">
+				#{bean.sessionId},
+			</if>
+			<if test="bean.lastMassage != null and bean.lastMassage != ''">
+				#{bean.lastMassage},
+			</if>
+			<if test="bean.lastReceiveTime != null">
+				#{bean.lastReceiveTime},
+			</if>
+		</trim>
+	</insert>
+
+	<!--插入或更新-->
+	<insert id="insertOrUpdate" parameterType="com.wechat.entity.po.ChatSession">
+		insert into tb_chat_session
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="bean.sessionId != null and bean.sessionId != ''">
+				session_id,
+			</if>
+			<if test="bean.lastMassage != null and bean.lastMassage != ''">
+				last_massage,
+			</if>
+			<if test="bean.lastReceiveTime != null">
+				last_receive_time,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="bean.sessionId != null and bean.sessionId != ''">
+				#{bean.sessionId},
+			</if>
+			<if test="bean.lastMassage != null and bean.lastMassage != ''">
+				#{bean.lastMassage},
+			</if>
+			<if test="bean.lastReceiveTime != null">
+				#{bean.lastReceiveTime},
+			</if>
+		</trim>
+		ON DUPLICATE KEY UPDATE
+		<trim prefix=""  suffix="" suffixOverrides=",">
+			<if test="bean.lastMassage != null and bean.lastMassage != ''">
+				last_massage=VALUES(last_massage),
+			</if>
+			<if test="bean.lastReceiveTime != null">
+				last_receive_time=VALUES(last_receive_time),
+			</if>
+		</trim>
+	</insert>
+
+	<!--批量插入-->
+	<insert id="insertBatch" parameterType="com.wechat.entity.po.ChatSession" useGeneratedKeys="true" keyProperty="id">
+		insert into tb_chat_session(session_id,last_massage,last_receive_time) VALUES 
+		<foreach collection="list" item="item" separator="," open="(" close=")" >
+			#{item.sessionId},#{item.lastMassage},#{item.lastReceiveTime} 
+		</foreach>
+	</insert>
+
+	<!--批量插入或更新-->
+	<insert id="insertOrUpdateBatch" parameterType="com.wechat.entity.po.ChatSession" useGeneratedKeys="true" keyProperty="id">
+		insert into tb_chat_session ( session_id,last_massage,last_receive_time ) VALUES
+		<foreach collection="list" item="item" separator=",">
+			(#{item.sessionId},#{item.lastMassage},#{item.lastReceiveTime}) 
+		</foreach>
+		ON DUPLICATE KEY UPDATE last_massage =VALUES( last_massage ),last_receive_time =VALUES( last_receive_time ) 
+	</insert>
+
+	<!--根据参数更新-->
+	<update id="updateByParam" parameterType="com.wechat.entity.po.ChatSession">
+		update tb_chat_session
+		<set>
+			<if test="bean.sessionId != null and bean.sessionId != ''">
+				session_id=#{bean.sessionId},
+			</if>
+			<if test="bean.lastMassage != null and bean.lastMassage != ''">
+				last_massage=#{bean.lastMassage},
+			</if>
+			<if test="bean.lastReceiveTime != null">
+				last_receive_time=#{bean.lastReceiveTime},
+			</if>
+		</set>
+		<include refid="query_condition"/>
+	</update>
+
+	<!--根据SessionId查询-->
+	<select id="selectBySessionId" resultMap="base_result_map">
+		select <include refid="base_column_list"/>
+		from tb_chat_session
+		where session_id=#{sessionId} 
+	</select>
+
+	<!--根据SessionId删除-->
+	<delete id="deleteBySessionId">
+		delete from tb_chat_session
+		where session_id=#{sessionId} 
+	</delete>
+
+	<!--根据SessionId更新-->
+	<update id="updateBySessionId">
+		update tb_chat_session
+		<set>
+			<if test="bean.lastMassage != null and bean.lastMassage != ''">
+				last_massage=#{bean.lastMassage},
+			</if>
+			<if test="bean.lastReceiveTime != null">
+				last_receive_time=#{bean.lastReceiveTime},
+			</if>
+		</set>
+		where session_id=#{sessionId} 
+	</update>
+
+
+</mapper>
